@@ -4,6 +4,12 @@ An interactive, browser-only explorer for PostgreSQL JSON `EXPLAIN` output. Past
 
 **Live demo:** https://brohum10.github.io/planclinic/
 
+![PlanClinic's browser-only landing page](docs/preview.jpg)
+
+The slow teaching example opens automatically. Scroll to the readout to see the four investigation clues, an inclusive-time view, and the execution tree. Switch to **Tuned join** to see the same interface show no clues when the evidence does not warrant one.
+
+![PlanClinic readout for a synthetic slow query](docs/readout.jpg)
+
 ## Why this exists
 
 A JSON plan has the evidence, but the nesting makes it hard to scan. PlanClinic keeps the interpretation modest: it surfaces disk sorts, hash batching, row-estimate gaps, heavily filtered sequential scans, repeated inner branches, and temporary I/O. Each clue shows the observed numbers and a next question. It does not promise that an index or configuration change will fix the query.
