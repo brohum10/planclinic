@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#101624" />
+    <meta name="description" content="Explore PostgreSQL JSON query plans locally. Inspect execution hotspots, row-estimate gaps, disk spills, and plan structure without uploading a query." />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'" />
+    <title>PlanClinic — PostgreSQL plans, made legible</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Skip to plan workspace</a>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="PlanClinic home"><span class="brand-icon" aria-hidden="true">✳</span> plan<span>clinic</span></a>
+        <div class="topbar-links"><span class="privacy-pill"><span aria-hidden="true">●</span> Local analysis</span><a href="https://github.com/brohum10/planclinic" target="_blank" rel="noopener noreferrer">Source ↗</a></div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <div class="eyebrow"><span class="eyebrow-line"></span> A BETTER WAY TO READ EXPLAIN</div>
+            <h1 id="hero-title">The query plan is telling you a story.<br /><em>Find the part that matters.</em></h1>
+            <p>Paste a PostgreSQL JSON plan. See the execution shape, spot evidence worth investigating, and leave with a clearer next question.</p>
+            <div class="hero-facts"><span>01 / Browser-only</span><span>02 / No account</span><span>03 / Evidence before advice</span></div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="art-grid"></div>
+            <div class="art-node art-node--root"><small>JOIN</small><strong>Nested Loop</strong><span>382.4 ms</span></div>
+            <div class="art-line art-line--one"></div><div class="art-line art-line--two"></div>
+            <div class="art-node art-node--scan"><small>SCAN</small><strong>orders</strong><span>80k filtered</span></div>
+            <div class="art-node art-node--join"><small>LOOKUP</small><strong>Index Scan</strong><span>4,000 calls</span></div>
+            <div class="art-caption">WHAT CHANGED? &nbsp; WHERE DID TIME GO?</div>
+          </div>
+        </section>
+
+        <section class="workspace" id="workspace" aria-labelledby="workspace-title">
+          <div class="section-header"><div><p class="section-kicker">THE WORKSPACE</p><h2 id="workspace-title">Open a plan</h2></div><p>The examples are synthetic teaching fixtures. Your pasted plan stays in this tab.</p></div>
+          <div class="workspace-grid">
+            <div class="input-card">
+              <div class="input-card-head"><span class="step">01 / INPUT</span><span class="file-hint">PostgreSQL JSON EXPLAIN</span></div>
+              <label class="input-label" for="plan-input">Plan JSON</label>
+              <textarea id="plan-input" spellcheck="false" placeholder="Paste EXPLAIN (FORMAT JSON) output here…" aria-describedby="input-help"></textarea>
+              <p id="input-help" class="input-help">Limit: 2 MB and 5,000 nodes. SQL text is not displayed in the results.</p>
+              <div class="input-actions"><button class="button button--primary" id="analyze-button" type="button">Analyze plan <span aria-hidden="true">↗</span></button><input id="file-input" type="file" accept=".json,application/json" /><label class="button button--secondary upload" for="file-input">Choose JSON file</label><button class="text-button" id="clear-button" type="button">Clear</button></div>
+              <div class="examples"><span>OR EXPLORE A SYNTHETIC EXAMPLE</span><div><button type="button" id="slow-example">01 / Slow join</button><button type="button" id="tuned-example">02 / Tuned join</button></div></div>
+            </div>
+            <aside class="guide-card" aria-labelledby="guide-title"><span class="step">02 / READ THE SIGNALS</span><h3 id="guide-title">An observation is not a prescription.</h3><p>A disk sort, a large row-estimate gap, or a repeated inner scan can be worth a look. None proves an index or setting will fix your query.</p><div class="guide-rule"></div><p class="guide-small"><strong>Time is inclusive.</strong> Parent node time includes descendants, and per-loop times are multiplied by loop count for a workload signal. Do not sum hotspot rows into query wall time.</p><a href="https://www.postgresql.org/docs/current/using-explain.html" target="_blank" rel="noopener noreferrer">Read the PostgreSQL EXPLAIN guide ↗</a></aside>
+          </div>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="results" id="results" aria-labelledby="results-title" hidden>
+          <div class="section-header"><div><p class="section-kicker">THE READOUT</p><h2 id="results-title">What the plan shows</h2></div><button id="copy-button" class="button button--outline" type="button">Copy short summary ↗</button></div>
+          <div class="metrics" id="metrics"></div>
+          <div class="results-grid"><section class="panel" aria-labelledby="findings-title"><div class="panel-heading"><span class="step">01 / INVESTIGATE</span><h3 id="findings-title">Evidence worth a look</h3></div><div id="findings"></div></section><section class="panel" aria-labelledby="hotspots-title"><div class="panel-heading"><span class="step">02 / TIME SHAPE</span><h3 id="hotspots-title">Inclusive node time</h3></div><p class="panel-note">Per-loop node time × loops. Parents include child work; these bars are not additive wall time.</p><div id="hotspots"></div></section></div>
+          <section class="panel tree-panel" aria-labelledby="tree-title"><div class="panel-heading"><span class="step">03 / PLAN SHAPE</span><h3 id="tree-title">Follow the execution tree</h3></div><div id="tree"></div></section>
+        </section>
+      </main>
+      <footer><span>Built by Soham Jindal · Open source</span><span>Local inspection, cautious interpretation.</span></footer>
+    </div>
+  </body>
+</html>
