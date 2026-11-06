@@ -23,10 +23,6 @@ function median(values) {
   return sorted[Math.floor(sorted.length / 2)];
 }
 
-function nodeTypes(plan) {
-  return parsePlan(JSON.stringify(plan)).nodes.map((node) => node.type);
-}
-
 async function capture(db) {
   for (let i = 0; i < WARMUPS; i++) await db.query(explain);
   const samples = [];
@@ -109,12 +105,18 @@ async function main() {
       await writeFile(paths.after, `${JSON.stringify(after.plan, null, 2)}\n`);
       await writeFile(paths.results, `${JSON.stringify(results, null, 2)}\n`);
     } else {
-      for (const phase of ["before", "after"]) {
-        const stored = JSON.parse(await readFile(paths[phase], "utf8"));
-        assert.deepEqual(nodeTypes(stored), phase === "before" ? before.nodeTypes : after.nodeTypes,
-          `${phase} fixture must match the reproducible query shape`);
-      }
       const stored = JSON.parse(await readFile(paths.results, "utf8"));
+      for (const phase of ["before", "after"]) {
+        const fixture = JSON.parse(await readFile(paths[phase], "utf8"));
+        const storedReport = parsePlan(JSON.stringify(fixture));
+        assert.deepEqual(storedReport.nodes.map((node) => node.type), phase === "before" ? before.nodeTypes : after.nodeTypes,
+          `${phase} fixture must match the reproducible query shape`);
+        assert.equal(storedReport.executionMs, stored[phase].medianMs,
+          `${phase} fixture must be the recorded median capture`);
+        assert.equal(storedReport.rootSharedAccesses,
+          stored[phase].rootSharedHits + stored[phase].rootSharedReads,
+          `${phase} fixture and recorded block counts must agree`);
+      }
       assert.equal(stored.rows, ROWS);
       assert.equal(stored.samples, SAMPLES);
       assert.equal(stored.returnedRows, beforeRows.length);

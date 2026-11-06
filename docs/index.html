@@ -53,6 +53,15 @@
           <p class="status" id="status" role="status" aria-live="polite"></p>
         </section>
 
+        <section class="case-study" id="case-study" aria-labelledby="case-study-title">
+          <div class="section-header"><div><p class="section-kicker">A REPRODUCIBLE POSTGRESQL RUN</p><h2 id="case-study-title">See what one index changed.</h2></div><p>Latest 20 events for one account, from 50,000 generated rows. Inspect the real before and after plans in the same readout below.</p></div>
+          <div class="case-study-grid">
+            <article class="case-card"><span class="step">01 / BEFORE INDEX</span><h3 id="case-before-shape">Loading plan…</h3><div class="case-card-metrics"><p><strong id="case-before-time">—</strong><span>median execution</span></p><p><strong id="case-before-blocks">—</strong><span>root shared hits + reads</span></p></div><button type="button" id="account-before" aria-pressed="false">Inspect before plan ↗</button></article>
+            <article class="case-card case-card--after"><span class="step">02 / AFTER INDEX</span><h3 id="case-after-shape">Loading plan…</h3><div class="case-card-metrics"><p><strong id="case-after-time">—</strong><span>median execution</span></p><p><strong id="case-after-blocks">—</strong><span>root shared hits + reads</span></p></div><button type="button" id="account-after" aria-pressed="false">Inspect after plan ↗</button></article>
+          </div>
+          <p class="case-note" id="case-note">PostgreSQL 18.6 via PGlite 0.5.15 · 3 warm-ups + 15 measured EXPLAIN runs per phase · warm, in-memory generated workload. These are local query measurements, not production performance. <a href="https://github.com/brohum10/planclinic/blob/main/case-study/README.md" target="_blank" rel="noopener noreferrer">Read the method and raw results ↗</a></p>
+        </section>
+
         <section class="results" id="results" aria-labelledby="results-title" hidden>
           <div class="section-header"><div><p class="section-kicker">THE READOUT</p><h2 id="results-title">What the plan shows</h2></div><button id="copy-button" class="button button--outline" type="button">Copy short summary ↗</button></div>
           <div class="metrics" id="metrics"></div>

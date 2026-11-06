@@ -663,6 +663,76 @@ footer {
 .results[hidden] {
   display: none;
 }
+.case-study {
+  padding: 75px 0 82px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.case-study-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 18px;
+  margin-top: 32px;
+}
+.case-card {
+  border: 1px solid #46556a;
+  border-radius: 17px;
+  padding: 30px;
+  background: linear-gradient(145deg,#202b3b,#182334);
+}
+.case-card--after {
+  border-color: #7fac71;
+  background: linear-gradient(145deg,#243a36,#182b34);
+}
+.case-card .step { color: var(--orange); }
+.case-card--after .step { color: var(--lime); }
+.case-card h3 {
+  margin: 18px 0 29px;
+  font-size: clamp(22px,2.8vw,34px);
+  line-height: 1.15;
+  letter-spacing: -.04em;
+}
+.case-card-metrics {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 15px;
+  border-top: 1px solid #4c5c68;
+  padding-top: 22px;
+}
+.case-card-metrics p { margin: 0; }
+.case-card-metrics strong {
+  display: block;
+  font-size: 27px;
+  letter-spacing: -.04em;
+}
+.case-card-metrics span {
+  display: block;
+  margin-top: 3px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.case-card button {
+  margin-top: 28px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 12px 16px;
+  background: #101624;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+.case-card button:hover,.case-card button[aria-pressed="true"] {
+  border-color: var(--lime);
+  color: var(--lime);
+}
+.case-note {
+  max-width: 950px;
+  margin: 22px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.case-note a { color: var(--lime); text-underline-offset: 3px; }
 @media(max-width:1050px) {
   .hero {
     grid-template-columns: 1fr;
@@ -734,9 +804,12 @@ footer {
     font-size: 8px;
     bottom: 16px;
   }
-  .workspace,.results {
+  .workspace,.results,.case-study {
     padding: 60px 0;
   }
+  .case-study-grid { grid-template-columns: 1fr; }
+  .case-card { padding: 20px; }
+  .case-card-metrics strong { font-size: 24px; }
   .section-header {
     align-items: start;
     flex-direction: column;

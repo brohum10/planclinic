@@ -11,7 +11,10 @@ const tree = document.querySelector("#tree");
 const exampleButtons = {
   slow: document.querySelector("#slow-example"),
   tuned: document.querySelector("#tuned-example"),
+  "account-before": document.querySelector("#account-before"),
+  "account-after": document.querySelector("#account-after"),
 };
+const exampleCache = new Map();
 let currentReport = null;
 let currentNodes = new Map();
 
@@ -142,7 +145,7 @@ function analyze() {
     metrics.replaceChildren();
     addMetric("Execution", formatMs(report.executionMs), report.executionMs === null ? "Not supplied" : "Query wall time from EXPLAIN");
     addMetric("Nodes", formatCount(report.nodes.length), "Plan operations");
-    addMetric("Shared reads", formatCount(report.rootReadBlocks), "Root count includes children");
+    addMetric("Shared blocks", formatCount(report.rootSharedAccesses), "Root hits + reads; includes children");
     addMetric("Signals", formatCount(report.findings.length), "Heuristics to investigate");
     renderFindings(report);
     renderHotspots(report);
@@ -158,14 +161,42 @@ function analyze() {
 
 async function loadExample(name) {
   try {
-    const response = await fetch(`./examples/${name}.json`);
-    if (!response.ok) throw new Error("Example unavailable");
-    input.value = await response.text();
+    input.value = await exampleText(name);
     setExample(name);
     analyze();
-    setStatus(`Synthetic ${name} example loaded. These numbers are teaching data, not a measured database run.`);
+    if (name.startsWith("account-")) {
+      setStatus(`Recorded ${name === "account-before" ? "before" : "after"} plan loaded. This is a measured local PGlite run, not production traffic.`);
+      results.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      setStatus(`Synthetic ${name} example loaded. These numbers are teaching data, not a measured database run.`);
+    }
   } catch {
     setStatus("Could not load the example. Try serving the docs directory over HTTP.", true);
+  }
+}
+
+async function exampleText(name) {
+  if (!exampleCache.has(name)) {
+    const response = await fetch(`./examples/${name}.json`);
+    if (!response.ok) throw new Error("Example unavailable");
+    exampleCache.set(name, await response.text());
+  }
+  return exampleCache.get(name);
+}
+
+async function showCaseStudy() {
+  try {
+    for (const phase of ["before", "after"]) {
+      const report = parsePlan(await exampleText(`account-${phase}`));
+      const root = report.nodes[0];
+      const blocks = root.sharedHit === null || root.sharedRead === null
+        ? null : root.sharedHit + root.sharedRead;
+      document.querySelector(`#case-${phase}-shape`).textContent = report.nodes.map((node) => node.type).join(" → ");
+      document.querySelector(`#case-${phase}-time`).textContent = formatMs(report.executionMs);
+      document.querySelector(`#case-${phase}-blocks`).textContent = formatCount(blocks);
+    }
+  } catch {
+    document.querySelector("#case-note").prepend("Recorded examples unavailable. ");
   }
 }
 
@@ -187,13 +218,13 @@ fileInput.addEventListener("change", async () => {
   setExample(null);
   analyze();
 });
-for (const name of ["slow", "tuned"]) exampleButtons[name].addEventListener("click", () => loadExample(name));
+for (const name of Object.keys(exampleButtons)) exampleButtons[name].addEventListener("click", () => loadExample(name));
 document.querySelector("#copy-button").addEventListener("click", async () => {
   if (!currentReport) return;
   const report = currentReport;
   const summary = ["PlanClinic summary", `Nodes: ${report.nodes.length}`,
     `Execution: ${formatMs(report.executionMs)}`,
-    `Shared reads (root, includes children): ${formatCount(report.rootReadBlocks)}`,
+    `Shared blocks (root hits + reads, includes children): ${formatCount(report.rootSharedAccesses)}`,
     ...report.findings.map((finding) => `- ${finding.title}: ${finding.evidence}`),
     "Heuristics are investigation prompts, not tuning prescriptions."].join("\n");
   try {
@@ -205,3 +236,4 @@ document.querySelector("#copy-button").addEventListener("click", async () => {
 });
 
 loadExample("slow");
+showCaseStudy();

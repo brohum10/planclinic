@@ -8,7 +8,9 @@ An interactive, browser-only explorer for PostgreSQL JSON `EXPLAIN` output. Past
 
 The slow teaching example opens automatically. Scroll to the readout to see the four investigation clues, an inclusive-time view, and the execution tree. Switch to **Tuned join** to see the same interface show no clues when the evidence does not warrant one.
 
-For a measured example, see the [latest-account-events case study](case-study/README.md): a deterministic 50,000-row workload run on PostgreSQL through PGlite, with before/after JSON plans, 15 captures per phase, and a script that checks result equality. Its timing is explicitly scoped to that local workload.
+The live page also offers a measured before/after pair. See the [latest-account-events case study](case-study/README.md): a deterministic 50,000-row workload run on PostgreSQL through PGlite, with JSON plans, 15 captures per phase, and a script that checks result equality. Its timing is explicitly scoped to that local workload.
+
+![Measured PostgreSQL before and after plans in PlanClinic](docs/case-study.jpg)
 
 ![PlanClinic readout for a synthetic slow query](docs/readout.jpg)
 
@@ -52,6 +54,6 @@ npm run bench
 
 ## Limits
 
-PlanClinic is a triage aid. It does not connect to PostgreSQL, inspect schema/index definitions, compare plans, or substitute for workload-aware query tuning. Pasted plans can contain private table names or literals in the original JSON; the app processes them locally, but review any text you copy or share.
+PlanClinic is a triage aid. It does not connect to your PostgreSQL server, inspect your schema/index definitions, accept arbitrary two-plan comparisons, or substitute for workload-aware query tuning. The measured pair is a recorded local demonstration. Pasted plans can contain private table names or literals in the original JSON; the app processes them locally, but review any text you copy or share.
 
 MIT licensed. See [LICENSE](LICENSE).

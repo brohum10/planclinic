@@ -92,6 +92,8 @@ export function parsePlan(text) {
     planningMs: number(document["Planning Time"]),
     executionMs: number(document["Execution Time"]),
     rootReadBlocks: root.sharedRead,
+    rootSharedAccesses: root.sharedHit === null || root.sharedRead === null
+      ? null : root.sharedHit + root.sharedRead,
     rootTempWrittenBlocks: root.tempWritten,
     hotspots: hasActual
       ? [...nodes].filter((node) => node.workMs !== null).sort((a, b) => b.workMs - a.workMs).slice(0, 8)
@@ -159,5 +161,5 @@ export function formatCount(value) {
 }
 
 export function formatMs(value) {
-  return value === null ? "—" : `${value < 10 ? value.toFixed(2) : value.toFixed(1)} ms`;
+  return value === null ? "—" : `${value < 1 ? value.toFixed(3) : value < 10 ? value.toFixed(2) : value.toFixed(1)} ms`;
 }

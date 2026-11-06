@@ -15,6 +15,7 @@ test("slow fixture has deterministic hierarchy, work, and evidence", () => {
   assert.equal(report.nodes[3].workMs, 220);
   assert.equal(report.executionMs, 436.8);
   assert.equal(report.rootReadBlocks, 2300);
+  assert.equal(report.rootSharedAccesses, 5500);
   assert.deepEqual(report.findings.map((finding) => finding.id), [
     "0-sort-spill", "0.0.0-row-estimate", "0.0.0-filtered-scan", "0.0.1-repeated-inner",
   ]);
@@ -36,6 +37,8 @@ test("recorded PostgreSQL case study keeps real before and after plans legible",
   assert.equal(after.findings.length, 0);
   assert.equal(before.nodes[2].rowsRemoved, 49_950);
   assert.equal(after.nodes[1].index, "audit_events_account_created_idx");
+  assert.equal(before.rootSharedAccesses, 1064);
+  assert.equal(after.rootSharedAccesses, 22);
 });
 
 test("estimated-only plans remain useful without inventing runtime", () => {
@@ -96,6 +99,7 @@ test("depth and node-count limits reject pathological plans", () => {
 test("formatting leaves unavailable data visibly unknown", () => {
   assert.equal(formatMs(null), "—");
   assert.equal(formatMs(1.234), "1.23 ms");
+  assert.equal(formatMs(0.036), "0.036 ms");
   assert.equal(formatCount(1200), "1,200");
   assert.equal(formatCount(null), "—");
 });
