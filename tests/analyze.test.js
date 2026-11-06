@@ -5,6 +5,8 @@ import { formatCount, formatMs, parsePlan, PlanError } from "../docs/analyze.js"
 
 const slow = readFileSync(new URL("../docs/examples/slow.json", import.meta.url), "utf8");
 const tuned = readFileSync(new URL("../docs/examples/tuned.json", import.meta.url), "utf8");
+const accountBefore = readFileSync(new URL("../docs/examples/account-before.json", import.meta.url), "utf8");
+const accountAfter = readFileSync(new URL("../docs/examples/account-after.json", import.meta.url), "utf8");
 
 test("slow fixture has deterministic hierarchy, work, and evidence", () => {
   const report = parsePlan(slow);
@@ -23,6 +25,17 @@ test("tuned fixture produces no false alarm from an ordinary in-memory sort", ()
   assert.equal(report.nodes.length, 5);
   assert.equal(report.findings.length, 0);
   assert.equal(report.rootTempWrittenBlocks, null);
+});
+
+test("recorded PostgreSQL case study keeps real before and after plans legible", () => {
+  const before = parsePlan(accountBefore);
+  const after = parsePlan(accountAfter);
+  assert.deepEqual(before.nodes.map((node) => node.type), ["Limit", "Sort", "Seq Scan"]);
+  assert.deepEqual(after.nodes.map((node) => node.type), ["Limit", "Index Scan"]);
+  assert.deepEqual(before.findings.map((finding) => finding.title), ["Sequential scan discards many rows"]);
+  assert.equal(after.findings.length, 0);
+  assert.equal(before.nodes[2].rowsRemoved, 49_950);
+  assert.equal(after.nodes[1].index, "audit_events_account_created_idx");
 });
 
 test("estimated-only plans remain useful without inventing runtime", () => {

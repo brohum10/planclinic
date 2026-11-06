@@ -8,6 +8,8 @@ An interactive, browser-only explorer for PostgreSQL JSON `EXPLAIN` output. Past
 
 The slow teaching example opens automatically. Scroll to the readout to see the four investigation clues, an inclusive-time view, and the execution tree. Switch to **Tuned join** to see the same interface show no clues when the evidence does not warrant one.
 
+For a measured example, see the [latest-account-events case study](case-study/README.md): a deterministic 50,000-row workload run on PostgreSQL through PGlite, with before/after JSON plans, 15 captures per phase, and a script that checks result equality. Its timing is explicitly scoped to that local workload.
+
 ![PlanClinic readout for a synthetic slow query](docs/readout.jpg)
 
 ## Why this exists
@@ -42,6 +44,7 @@ These rules follow the [PostgreSQL EXPLAIN documentation](https://www.postgresql
 
 ```bash
 npm test
+npm run case-study
 npm run bench
 ```
 

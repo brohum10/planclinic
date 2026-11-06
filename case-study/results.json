@@ -1,0 +1,67 @@
+{
+  "engine": "PostgreSQL 18.6 (PGlite 0.5.15) on wasm32-unknown-emscripten, compiled by emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 6.0.13 (e13ee988ce3d87a738dd8f3661d02223308c412a), 32-bit",
+  "dataset": "Deterministic, generated audit events; one row per ID, account_id = ID % 1000",
+  "rows": 50000,
+  "returnedRows": 20,
+  "query": "SELECT id, account_id, created_at\nFROM audit_events\nWHERE account_id = 42\nORDER BY created_at DESC\nLIMIT 20",
+  "index": "CREATE INDEX audit_events_account_created_idx ON audit_events (account_id, created_at DESC)",
+  "warmups": 3,
+  "samples": 15,
+  "before": {
+    "timesMs": [
+      4.039,
+      4.05,
+      4.314,
+      4.059,
+      4.09,
+      3.99,
+      4.007,
+      3.987,
+      4.02,
+      4.006,
+      3.977,
+      4.106,
+      4.014,
+      3.989,
+      3.974
+    ],
+    "medianMs": 4.014,
+    "minMs": 3.974,
+    "maxMs": 4.314,
+    "nodeTypes": [
+      "Limit",
+      "Sort",
+      "Seq Scan"
+    ],
+    "rootSharedHits": 1064,
+    "rootSharedReads": 0
+  },
+  "after": {
+    "timesMs": [
+      0.037,
+      0.037,
+      0.037,
+      0.037,
+      0.036,
+      0.036,
+      0.038,
+      0.037,
+      0.043,
+      0.036,
+      0.036,
+      0.036,
+      0.036,
+      0.036,
+      0.036
+    ],
+    "medianMs": 0.036,
+    "minMs": 0.036,
+    "maxMs": 0.043,
+    "nodeTypes": [
+      "Limit",
+      "Index Scan"
+    ],
+    "rootSharedHits": 22,
+    "rootSharedReads": 0
+  }
+}

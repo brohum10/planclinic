@@ -5,6 +5,11 @@
   "type": "module",
   "scripts": {
     "test": "node --test",
-    "bench": "node benchmarks/bench.mjs"
+    "bench": "node benchmarks/bench.mjs",
+    "case-study": "node case-study/run.mjs --verify",
+    "case-study:record": "node case-study/run.mjs --write"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.15"
   }
 }
